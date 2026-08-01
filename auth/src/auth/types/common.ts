@@ -5,3 +5,13 @@ export type AuthResponse = {
   role_id: number;
   role: string;
 };
+
+export type TokenUser = {
+  id: number;
+  email: string;
+  role_id: number;
+  role?: string;
+  Role?: {
+    name: string;
+  };
+};

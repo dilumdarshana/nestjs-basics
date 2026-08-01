@@ -8,7 +8,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) { }
+  constructor(private readonly adminService: AdminService) {}
 
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
@@ -22,7 +22,7 @@ export class AdminController {
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard)
   @Get('roles')
-  listRole() {
+  listRoles() {
     return this.adminService.listRoles();
   }
 }

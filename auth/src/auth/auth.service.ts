@@ -11,8 +11,9 @@ import { ConfigType } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { JwtPayload } from './types/jwt-payload';
 import { TokenResponse } from './types/token-response';
-import { AuthResponse } from './types/common';
+import { AuthResponse, TokenUser } from './types/common';
 import refreshConfig from './config/jwt.refresh.config';
+import { SigninPayloadDto } from './dto/signin-payload.dto';
 import { SignupPayloadDto } from './dto/signup-payload.dto';
 import { ROLES } from '../constants/app.constants';
 
@@ -25,7 +26,7 @@ export class AuthService {
     private refreshTokenConfig: ConfigType<typeof refreshConfig>,
   ) {}
 
-  async signin({ username, password }) {
+  async signin({ username, password }: SigninPayloadDto) {
     const user = await this.userService.findByEmail(username);
 
     if (!user) throw new NotFoundException(`User ${username} not found`);
@@ -62,7 +63,7 @@ export class AuthService {
     };
   }
 
-  async generateTokens(user): Promise<TokenResponse> {
+  async generateTokens(user: TokenUser): Promise<TokenResponse> {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,

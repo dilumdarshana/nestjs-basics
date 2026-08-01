@@ -7,7 +7,9 @@
 #  3. Run a request by clicking "Send Request" above it.
 #
 # Flow: signup -> signin -> copy the accessToken/refreshToken you get
-# from signin, then paste them into the placeholders below.
+# from signin into `.env` (ACCESS_TOKEN / REFRESH_TOKEN / ADMIN_ACCESS_TOKEN).
+# The `{{$dotenv VAR}}` placeholders below are filled in automatically by
+# the extension from `.env`, so tokens are never committed to git.
 # =====================================================================
 
 
@@ -32,9 +34,8 @@ Content-Type: application/json
 # ---------------------------------------------------------------------
 # 2. SIGNIN — exchange email + password for tokens.
 #    Returns: { ..., "accessToken": "...", "refreshToken": "..." }
-#    Copy BOTH tokens from the response and paste them into the
-#    requests below (whoami / refresh-token / admin role).
-#    (The Authorization header here is NOT needed — remove it.)
+#    Copy the accessToken into `.env` as ACCESS_TOKEN and the refreshToken
+#    as REFRESH_TOKEN. (The Authorization header here is NOT needed.)
 # ---------------------------------------------------------------------
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
@@ -49,19 +50,20 @@ Content-Type: application/json
 
 # ---------------------------------------------------------------------
 # 3. WHOAMI — current user (protected by JwtAuthGuard).
-#    Send the ACCESS token you got from signin.
+#    Uses ACCESS_TOKEN from `.env` (sign in as admin to get a valid token).
 #    Expect: 200 { "id": ..., "name": "...", "email": "...",
 #                  "role_id": 2, "role": "user" }
 #    No token / bad token -> 401.
 # ---------------------------------------------------------------------
 GET http://localhost:3000/auth/whoami
-Authorization: Bearer <PASTE_ACCESS_TOKEN>
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
 
 ###
 
 
 # ---------------------------------------------------------------------
 # 4. REFRESH TOKEN — get a new token pair from the REFRESH token.
+#    Uses REFRESH_TOKEN from `.env`.
 #    Note: the refresh token goes in the JSON body field "refresh",
 #    NOT in an Authorization header (see jwt.refresh.strategy.ts).
 #    Expect: 201 { ..., "accessToken": "...", "refreshToken": "..." }
@@ -70,7 +72,7 @@ POST http://localhost:3000/auth/refresh-token
 Content-Type: application/json
 
 {
-  "refresh": "<PASTE_REFRESH_TOKEN>"
+  "refresh": "{{$dotenv REFRESH_TOKEN}}"
 }
 
 ###
@@ -78,6 +80,7 @@ Content-Type: application/json
 
 # ---------------------------------------------------------------------
 # 5. CREATE ROLE (RBAC demo) — requires an ADMIN access token.
+#    Uses ADMIN_ACCESS_TOKEN from `.env` (set after signing in as admin).
 #    If you sign in as a "user" role you get: 403 Forbidden resource.
 #    To get an admin token: run `pnpm db:admin` (creates
 #    admin@example.com / 1qaz!QAZ) then sign in with it.
@@ -85,19 +88,26 @@ Content-Type: application/json
 # ---------------------------------------------------------------------
 POST http://localhost:3000/admin/role
 Content-Type: application/json
-Authorization: Bearer <PASTE_ADMIN_ACCESS_TOKEN>
+Authorization: Bearer {{$dotenv ADMIN_ACCESS_TOKEN}}
 
 {
   "name": "moderator"
 }
 
 ###
+# ---------------------------------------------------------------------
+# 6. LIST ROLES — requires an ADMIN access token.
+#    The token comes from the `ADMIN_ACCESS_TOKEN` variable in `.env`
+#    (see README). Sign in as admin (request #2), copy the accessToken
+#    into .env as `ADMIN_ACCESS_TOKEN=...`, and this request will work.
+#    Expect: 200 with an array of roles.
+# ---------------------------------------------------------------------
 GET http://localhost:3000/admin/roles
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlX2lkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3ODU2MDg2MzgsImV4cCI6MTc4NTYxMjIzOH0.2D7sPmiYY3V2nN7K47LlA2CUPnAvTAZh2TupakEFvZE
+Authorization: Bearer {{$dotenv ADMIN_ACCESS_TOKEN}}
 
 
 # ---------------------------------------------------------------------
-# 6. GET USER BY ID — public route (no auth required).
+# 7. GET USER BY ID — public route (no auth required).
 #    Expect: 200 with the user row.
 #    NOTE: the response includes the argon2 password hash — this is a
 #    known data-exposure quirk (see auth/README.md "Gotchas").

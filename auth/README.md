@@ -229,6 +229,24 @@ TOKEN=$(curl -s -X POST http://localhost:3000/auth/signin \
 curl -s http://localhost:3000/auth/whoami -H "Authorization: Bearer $TOKEN"
 ```
 
+### `test.rest` tokens stay out of git
+
+The REST Client file uses `{{$dotenv VAR}}` placeholders (`ACCESS_TOKEN`,
+`REFRESH_TOKEN`, `ADMIN_ACCESS_TOKEN`). Real tokens are **never committed** —
+they live in the gitignored `.env`:
+
+1. Start the app and sign in (`admin@example.com` / `1qaz!QAZ` for admin).
+2. Copy the tokens from the response into `auth/.env`:
+
+   ```
+   ACCESS_TOKEN=eyJ...
+   REFRESH_TOKEN=eyJ...
+   ADMIN_ACCESS_TOKEN=eyJ...   # same as ACCESS_TOKEN when signed in as admin
+   ```
+
+3. Send requests from `test.rest` — the extension injects the tokens
+   automatically. When they expire, just refresh them in `.env`.
+
 ## Tests
 
 - **Unit** (`pnpm test`): 15 tests — services, controllers, guards with mocked Prisma/UserService (jest 30).

@@ -2,7 +2,7 @@ export type JwtPayload = {
   sub: number; // subject (unique user identifier): user_id in this case
   email?: string;
   role_id?: number; //
-  role?: 'user' | 'admin';
+  role?: string;
   iat?: number; // issued at (timestamp)
   exp?: number; // expiration time (timestamp)
 
