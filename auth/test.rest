@@ -40,7 +40,7 @@ POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
 {
-  "username": "alex@example.com",
+  "username": "admin@example.com",
   "password": "1qaz!QAZ"
 }
 
@@ -92,6 +92,8 @@ Authorization: Bearer <PASTE_ADMIN_ACCESS_TOKEN>
 }
 
 ###
+GET http://localhost:3000/admin/roles
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlX2lkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3ODU2MDg2MzgsImV4cCI6MTc4NTYxMjIzOH0.2D7sPmiYY3V2nN7K47LlA2CUPnAvTAZh2TupakEFvZE
 
 
 # ---------------------------------------------------------------------

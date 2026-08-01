@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { hash } from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignupPayloadDto } from '../auth/dto/signup_payload.dto';
+import { SignupPayloadDto } from '../auth/dto/signup-payload.dto';
 import { User } from './types/user';
 
 @Injectable()

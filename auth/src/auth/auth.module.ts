@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,12 +11,17 @@ import jwtRefreshConfig from './config/jwt.refresh.config';
 
 @Module({
   imports: [
-    // without using nest config module
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: {
-        expiresIn: process.env.JWT_EXPIRATION as JwtSignOptions['expiresIn'],
-      },
+    // JWT access token configuration using nest config module
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>(
+            'JWT_EXPIRATION',
+          ) as JwtSignOptions['expiresIn'],
+        },
+      }),
     }),
     // JWT refresh token configuration using nest config module
     ConfigModule.forFeature(jwtRefreshConfig),

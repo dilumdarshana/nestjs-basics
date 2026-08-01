@@ -17,3 +17,4 @@ allowBuilds:
   esbuild: true
   '@swc/core': true
   argon2: true
+  unrs-resolver: true

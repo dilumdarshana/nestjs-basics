@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 
 describe('Auth (e2e)', () => {
@@ -42,5 +42,9 @@ describe('Auth (e2e)', () => {
       .expect(200);
 
     expect(whoami.body.email).toEqual(email);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });

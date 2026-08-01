@@ -7,8 +7,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SigninPayloadDto } from './dto/signin_payload.dto';
-import { SignupPayloadDto } from './dto/signup_payload.dto';
+import { SigninPayloadDto } from './dto/signin-payload.dto';
+import { SignupPayloadDto } from './dto/signup-payload.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 // import { LocalAuthGuard } from '../auth/guards/local-auth.guard';

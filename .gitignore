@@ -40,3 +40,6 @@ carval/*.sqlite
 
 # TypeORM generated migrations (committed manually via migrations/ dir)
 *-migrations.ts
+
+# Prisma 7 generated client (auth)
+auth/src/generated/

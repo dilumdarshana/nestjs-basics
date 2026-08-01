@@ -9,11 +9,11 @@ import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import { UserService } from '../user/user.service';
-import { JwtPayload } from './types/jwt_payload';
-import { TokenResponse } from './types/token_respone';
+import { JwtPayload } from './types/jwt-payload';
+import { TokenResponse } from './types/token-response';
 import { AuthResponse } from './types/common';
 import refreshConfig from './config/jwt.refresh.config';
-import { SignupPayloadDto } from './dto/signup_payload.dto';
+import { SignupPayloadDto } from './dto/signup-payload.dto';
 import { ROLES } from '../constants/app.constants';
 
 @Injectable()

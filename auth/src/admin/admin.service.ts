@@ -19,11 +19,19 @@ export class AdminService {
     });
   }
 
+  async listRoles() {
+    return this.findAllRoles();
+  }
+
   roleFindByName(roleName: string) {
     return this.prismaService.role.findUnique({
       where: {
         name: roleName,
       },
     });
+  }
+
+  findAllRoles() {
+    return this.prismaService.role.findMany();
   }
 }
