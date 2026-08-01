@@ -12,8 +12,8 @@ export class NetworkService {
 
   connectComputer(): void {
     const computers = this.computerService.getComputers();
-  
-    for (let computer of computers) {
+
+    for (const computer of computers) {
       this.connectedComputers.push(computer);
     }
   }

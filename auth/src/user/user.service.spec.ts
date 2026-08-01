@@ -4,7 +4,6 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('UserService', () => {
   let userService: UserService;
-  let prismaService: PrismaService;
 
   const createUserDto = {
     name: 'New User',
@@ -15,15 +14,16 @@ describe('UserService', () => {
 
   const createUserRes = {
     ...createUserDto,
-    password: '$argon2id$v=19$m=65536,t=3,p=4$oDBGMUAl/euo6XIOg+BhPA$x1LfUByQZmt6u7A75MzHuDXTKcsfkw89APAOW0bJ9eI'
-  }
+    password:
+      '$argon2id$v=19$m=65536,t=3,p=4$oDBGMUAl/euo6XIOg+BhPA$x1LfUByQZmt6u7A75MzHuDXTKcsfkw89APAOW0bJ9eI',
+  };
 
   const db = {
     user: {
       create: jest.fn().mockResolvedValue(createUserRes),
-      findUnique: jest.fn().mockResolvedValue({ id: 2, name: 'test'}),
+      findUnique: jest.fn().mockResolvedValue({ id: 2, name: 'test' }),
     },
-  }
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,12 +32,11 @@ describe('UserService', () => {
         {
           provide: PrismaService,
           useValue: db,
-        }
+        },
       ],
     }).compile();
 
     userService = module.get<UserService>(UserService);
-    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -45,14 +44,14 @@ describe('UserService', () => {
   });
 
   it('should create a new user', async () => {
-     const res = await userService.create(createUserDto);
-      
-     expect(res).toMatchObject(createUserRes);
+    const res = await userService.create(createUserDto);
+
+    expect(res).toMatchObject(createUserRes);
   });
 
   it('should work find by id', async () => {
     const res = await userService.findById(1);
 
-    expect(res).toEqual({ id: 2, name: 'test'});
+    expect(res).toEqual({ id: 2, name: 'test' });
   });
 });

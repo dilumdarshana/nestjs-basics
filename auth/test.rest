@@ -1,3 +1,22 @@
+# =====================================================================
+# auth — REST Client examples
+# =====================================================================
+# How to use:
+#  1. Install the "REST Client" extension in VS Code.
+#  2. Start the app:  pnpm start:auth   (from the repo root)
+#  3. Run a request by clicking "Send Request" above it.
+#
+# Flow: signup -> signin -> copy the accessToken/refreshToken you get
+# from signin, then paste them into the placeholders below.
+# =====================================================================
+
+
+# ---------------------------------------------------------------------
+# 1. SIGNUP — create a new user.
+#    Always assigns the "user" role (role_id in the body is ignored).
+#    Expect: 201 { "message": "User created successfully" }
+#    Note:   running it twice with the same email -> 409 Conflict.
+# ---------------------------------------------------------------------
 POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
@@ -8,9 +27,17 @@ Content-Type: application/json
 }
 
 ###
+
+
+# ---------------------------------------------------------------------
+# 2. SIGNIN — exchange email + password for tokens.
+#    Returns: { ..., "accessToken": "...", "refreshToken": "..." }
+#    Copy BOTH tokens from the response and paste them into the
+#    requests below (whoami / refresh-token / admin role).
+#    (The Authorization header here is NOT needed — remove it.)
+# ---------------------------------------------------------------------
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
-Authorization: 'Bearer'
 
 {
   "username": "alex@example.com",
@@ -18,26 +45,61 @@ Authorization: 'Bearer'
 }
 
 ###
+
+
+# ---------------------------------------------------------------------
+# 3. WHOAMI — current user (protected by JwtAuthGuard).
+#    Send the ACCESS token you got from signin.
+#    Expect: 200 { "id": ..., "name": "...", "email": "...",
+#                  "role_id": 2, "role": "user" }
+#    No token / bad token -> 401.
+# ---------------------------------------------------------------------
 GET http://localhost:3000/auth/whoami
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjcsImVtYWlsIjoiYWxleDJAZXhhbXBsZS5jb20iLCJyb2xlIjoxLCJpYXQiOjE3MzM1NzU3NzUsImV4cCI6MTczMzU3NjM3NX0.J8lR29huoIQsoq3BnGq_cJIkyY56RE0lYxkdeo20k0Y
+Authorization: Bearer <PASTE_ACCESS_TOKEN>
 
 ###
+
+
+# ---------------------------------------------------------------------
+# 4. REFRESH TOKEN — get a new token pair from the REFRESH token.
+#    Note: the refresh token goes in the JSON body field "refresh",
+#    NOT in an Authorization header (see jwt.refresh.strategy.ts).
+#    Expect: 201 { ..., "accessToken": "...", "refreshToken": "..." }
+# ---------------------------------------------------------------------
 POST http://localhost:3000/auth/refresh-token
 Content-Type: application/json
 
 {
-  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjcsImVtYWlsIjoiYWxleDJAZXhhbXBsZS5jb20iLCJyb2xlIjoxLCJpYXQiOjE3MzM1Nzc5MTQsImV4cCI6MTczNjE2OTkxNH0.ZKuFG3EAjJ10YrB_Ff966x4toZLmY0vz0a-1m7OsTd4"
+  "refresh": "<PASTE_REFRESH_TOKEN>"
 }
 
 ###
+
+
+# ---------------------------------------------------------------------
+# 5. CREATE ROLE (RBAC demo) — requires an ADMIN access token.
+#    If you sign in as a "user" role you get: 403 Forbidden resource.
+#    To get an admin token: run `pnpm db:admin` (creates
+#    admin@example.com / 1qaz!QAZ) then sign in with it.
+#    Expect: 201 { "id": ..., "name": "moderator", ... }
+# ---------------------------------------------------------------------
 POST http://localhost:3000/admin/role
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWxleEBleGFtcGxlLmNvbSIsInJvbGVfaWQiOjIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMzNzkzNjA3LCJleHAiOjE3MzM3OTcyMDd9.vaXKa1h6kv1pFl0rSGpdYdWoGyPmOkpmZHFspfdOpSQ
+Authorization: Bearer <PASTE_ADMIN_ACCESS_TOKEN>
 
 {
-  "name": "user"
+  "name": "moderator"
 }
 
 ###
+
+
+# ---------------------------------------------------------------------
+# 6. GET USER BY ID — public route (no auth required).
+#    Expect: 200 with the user row.
+#    NOTE: the response includes the argon2 password hash — this is a
+#    known data-exposure quirk (see auth/README.md "Gotchas").
+# ---------------------------------------------------------------------
 GET http://localhost:3000/user/1
 
+###

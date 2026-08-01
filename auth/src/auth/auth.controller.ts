@@ -1,4 +1,11 @@
-import { Controller, Post, Get, Body, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninPayloadDto } from './dto/signin_payload.dto';
 import { SignupPayloadDto } from './dto/signup_payload.dto';
@@ -6,10 +13,9 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 // import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 
-
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService){}
+  constructor(private authService: AuthService) {}
 
   /**
    * Validate user and return the user if valid
@@ -18,7 +24,7 @@ export class AuthController {
    */
   @Post('signin')
   // @UseGuards(LocalAuthGuard)
-  signin(@Body() body: SigninPayloadDto){
+  signin(@Body() body: SigninPayloadDto) {
     return this.authService.signin(body);
   }
 

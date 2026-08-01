@@ -8,6 +8,6 @@ export type JwtPayload = {
 
   permissions?: string[]; // granular permissions
 
-  device?: string;       // device type/identifier
-  loginSource?: string;  // how user logged in (web, mobile, etc.)
+  device?: string; // device type/identifier
+  loginSource?: string; // how user logged in (web, mobile, etc.)
 };

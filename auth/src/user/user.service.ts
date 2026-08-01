@@ -17,12 +17,12 @@ export class UserService {
       data: {
         ...user,
         password: hasedPassword,
-      }
+      },
     });
   }
 
   findById(id: number): Promise<User> {
-    return this.prismaService.user.findUnique({ 
+    return this.prismaService.user.findUnique({
       where: {
         id,
       },
@@ -46,8 +46,8 @@ export class UserService {
   findRoleIdByName(name: string) {
     return this.prismaService.role.findUnique({
       where: {
-        name
-      }
+        name,
+      },
     });
   }
 }

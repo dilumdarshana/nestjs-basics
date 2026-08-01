@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import jwtRefreshConfig from './config/jwt.refresh.config';
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,7 +9,6 @@ import { PrismaService } from '../prisma/prisma.service';
 describe('AuthService', () => {
   let service: AuthService;
   let userService: UserService;
-  let prismaService: PrismaService;
   let jwtService: JwtService;
 
   const mockUser = {
@@ -33,7 +31,7 @@ describe('AuthService', () => {
     id: 1,
     name: 'user',
     created_at: new Date(),
-  }
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,9 +39,12 @@ describe('AuthService', () => {
         ConfigModule.forRoot(),
         JwtModule.register({
           secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: process.env.JWT_EXPIRATION },
+          signOptions: {
+            expiresIn: process.env
+              .JWT_EXPIRATION as JwtSignOptions['expiresIn'],
+          },
         }),
-        ConfigModule.forFeature(jwtRefreshConfig), 
+        ConfigModule.forFeature(jwtRefreshConfig),
       ],
       providers: [
         AuthService,
@@ -52,20 +53,22 @@ describe('AuthService', () => {
         {
           provide: 'REFRESH_TOKEN_CONFIG',
           useValue: {
-            secret: process.env.JWT_REFRESH_SECRET || 'test-refresh-secret'
-          }
+            secret: process.env.JWT_REFRESH_SECRET || 'test-refresh-secret',
+          },
         },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
-    prismaService = module.get<PrismaService>(PrismaService);
     jwtService = module.get<JwtService>(JwtService);
   });
 
   beforeEach(() => {
-    jest.spyOn(userService, 'findByEmail').mockClear().mockResolvedValue(mockUser);
+    jest
+      .spyOn(userService, 'findByEmail')
+      .mockClear()
+      .mockResolvedValue(mockUser);
   });
 
   it('should be defined', () => {
@@ -73,7 +76,9 @@ describe('AuthService', () => {
   });
 
   it('should signin works', async () => {
-    jest.spyOn(require('argon2'), 'verify').mockImplementation(() => Promise.resolve(true));
+    jest
+      .spyOn(require('argon2'), 'verify')
+      .mockImplementation(() => Promise.resolve(true));
 
     jest.spyOn(service as any, 'generateTokens').mockResolvedValue({
       accessToken: 'xxxx',
@@ -98,15 +103,18 @@ describe('AuthService', () => {
   it('shold throw exception when user not found', async () => {
     jest.spyOn(userService, 'findByEmail').mockResolvedValue(null);
 
-    await expect(service.signin({
-      username: 'test@example.com',
-      password: 'test123',
-    })).rejects.toThrow(`User test@example.com not found`);
+    await expect(
+      service.signin({
+        username: 'test@example.com',
+        password: 'test123',
+      }),
+    ).rejects.toThrow(`User test@example.com not found`);
   });
 
   it('should signup validate existing user', async () => {
-    await (expect(service.signup(mockUserDto))
-      .rejects.toThrow('User already exists!'));
+    await expect(service.signup(mockUserDto)).rejects.toThrow(
+      'User already exists!',
+    );
   });
 
   it('should signup works', async () => {
@@ -121,20 +129,23 @@ describe('AuthService', () => {
     expect(result.message).toEqual('User created successfully');
   });
 
-  it.only('should generate token work', async () => {
+  it('should generate token work', async () => {
     const spySignAsync = jest.spyOn(jwtService, 'signAsync');
 
     spySignAsync
       .mockImplementationOnce(() => Promise.resolve('mockAccessToken'))
       .mockImplementationOnce(() => Promise.resolve('mockRefreshToken'));
 
-      const result = await service.generateTokens({ ...mockUser, Role: { name: 'admin' } });
+    const result = await service.generateTokens({
+      ...mockUser,
+      Role: { name: 'admin' },
+    });
 
-      expect(result).toEqual({
-        accessToken:'mockAccessToken',
-        refreshToken:'mockRefreshToken',
-      });
+    expect(result).toEqual({
+      accessToken: 'mockAccessToken',
+      refreshToken: 'mockRefreshToken',
+    });
 
-      expect(spySignAsync).toHaveBeenCalledTimes(2);
+    expect(spySignAsync).toHaveBeenCalledTimes(2);
   });
 });

@@ -19,7 +19,7 @@ describe('UserController', () => {
       id: 2,
       name: 'user',
       created_at: new Date(),
-    }
+    },
   };
 
   beforeEach(async () => {
@@ -34,16 +34,16 @@ describe('UserController', () => {
             findById: jest.fn(),
             findByEmail: jest.fn(),
             findRoleIdByName: jest.fn(),
-          }
+          },
         },
         {
           provide: PrismaService,
           useValue: {
             user: {
               findUnique: jest.fn(),
-            }
-          }
-        }
+            },
+          },
+        },
       ],
     }).compile();
     controller = module.get<UserController>(UserController);
@@ -60,6 +60,4 @@ describe('UserController', () => {
     expect(await controller.findOne('1')).toBe(mockUser);
     expect(userService.findById).toHaveBeenCalledWith(1);
   });
-
-  
 });

@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, AfterInsert, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  AfterInsert,
+  ManyToOne,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity()
@@ -6,7 +12,7 @@ export class Report {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column( { default: false })
+  @Column({ default: false })
   approved: boolean;
 
   @Column()
@@ -28,7 +34,7 @@ export class Report {
   user: User;
 
   @AfterInsert()
-  logInsert () {
+  logInsert() {
     console.log('Inserted report with id', this.id);
   }
 }

@@ -1,0 +1,36 @@
+{
+  "name": "nest-concepts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Collection of standalone NestJS feature projects for reference",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@11.18.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "format": "prettier --write .",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "test:cov": "pnpm -r test:cov",
+    "test:e2e": "pnpm -r test:e2e",
+    "start:auth": "pnpm --filter auth start:dev",
+    "start:carval": "pnpm --filter carval start:dev",
+    "start:di": "pnpm --filter di start:dev",
+    "start:event-emitter": "pnpm --filter event-emitter start:dev",
+    "start:execution-order": "pnpm --filter execution-order start:dev",
+    "start:k6": "pnpm --filter k6 start:dev",
+    "start:messages": "pnpm --filter messages start:dev",
+    "start:prometheus": "pnpm --filter prometheus start:dev"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^15.14.0",
+    "prettier": "^3.5.3",
+    "typescript-eslint": "^8.26.0"
+  }
+}

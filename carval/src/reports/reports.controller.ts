@@ -1,4 +1,13 @@
-import { Controller, Body, Get, Post, Patch, Param, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Get,
+  Post,
+  Patch,
+  Param,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { AuthGuard } from '../guards/auth.guard';
@@ -29,6 +38,6 @@ export class ReportsController {
 
   @Get()
   getReport(@Query() query: GetEstimateDto) {
-    return this.reportService.getReport(query)
+    return this.reportService.getReport(query);
   }
 }

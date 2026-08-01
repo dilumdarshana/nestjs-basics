@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMessageDto } from './dtos/create-message.dto';
 import { MessageService } from './messages.service';
 

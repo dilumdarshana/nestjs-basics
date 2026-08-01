@@ -1,73 +1,81 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# messages — Layered CRUD with a JSON-file Store
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The simplest project in the workspace: a **Controller → Service → Repository** layered CRUD app that persists to a **JSON file** instead of a database. Perfect for studying Nest's canonical layering and DI without any ORM or DB setup.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## What this project demonstrates
 
-## Description
+| Concept | Where |
+| --- | --- |
+| **Three-layer architecture** (controller / service / repository) | `src/messages/*.ts` |
+| **JSON file as persistence** (`fs/promises` read + write) | `src/messages/messages.repository.ts` |
+| **DTO validation** with `class-validator` + global `ValidationPipe` | `src/messages/dtos/create-message.dto.ts`, `src/main.ts` |
+| **Constructor DI** across layers | `MessagesController → MessageService → MessageRepository` |
+| **`NotFoundException`** for missing resources | `src/messages/messages.controller.ts` |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Architecture
 
-## Installation
-
-```bash
-$ npm install
+```
+HTTP ──> MessagesController ──> MessageService ──> MessageRepository
+            (parse HTTP)          (business logic)   (reads/writes messages.json)
+                                                          │
+                                              ┌───────────▼───────────┐
+                                              │ messages.json (repo)  │
+                                              │ {"12":{"id":12,...}}  │
+                                              └───────────────────────┘
 ```
 
-## Running the app
+- The repository is the **only** layer that touches the file system.
+- The service is a thin facade; in a real app business rules would live here.
+- The controller handles HTTP concerns (params, DTO, 404).
 
-```bash
-# development
-$ npm run start
+## File tree
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+messages/
+├─ messages.json              # the "database" (keyed by id)
+└─ src/
+   ├─ main.ts                 # global ValidationPipe
+   └─ messages/
+      ├─ messages.module.ts   # providers: MessageService, MessageRepository
+      ├─ messages.controller.ts
+      ├─ messages.service.ts
+      ├─ messages.repository.ts
+      └─ dtos/create-message.dto.ts   # @IsString() @MinLength(1)
 ```
 
-## Test
+## Routes
+
+| Method | Route | Body/Param | Response |
+| --- | --- | --- | --- |
+| `GET` | `/messages` | — | all messages (JSON object) |
+| `POST` | `/messages` | `{ content }` | 201, empty body |
+| `GET` | `/messages/:id` | `id` | one message, else `404 Message <id> not found` |
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+curl -X POST http://localhost:3000/messages \
+  -H 'Content-Type: application/json' -d '{"content":"hello"}'
+curl http://localhost:3000/messages
+curl http://localhost:3000/messages/12
 ```
 
-## Support
+## Running it
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+pnpm start:dev            # or from repo root: pnpm start:messages
+```
 
-## Stay in touch
+> Start from the project root — the repository reads `./messages.json` relative to the **process working directory** (see Gotchas).
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Tests
 
-## License
+- **Unit** (`pnpm test`): 1 spec (controller "should be defined", service stubbed).
+- **e2e** (`pnpm test:e2e`): boots `MessagesModule`, asserts `GET /messages` → 200. No POST tests.
 
-Nest is [MIT licensed](LICENSE).
+## Gotchas / notes
+
+- **CWD-dependent path**: `MessageRepository` uses the relative path `'./messages.json'`, resolved against where the process runs. `pnpm start:dev` from the project folder works; a different CWD breaks it.
+- IDs are `Math.floor(Math.random() * 999)` — collisions silently overwrite existing messages.
+- No error handling for a missing/corrupt `messages.json` (would 500).
+- `findAll()` is typed `Promise<{ conent: string[] }>` (typo) but actually returns the parsed record — the annotation doesn't match reality.
+- `POST` returns an empty 201 body.
+- The `ValidationPipe` is registered in `main.ts` only, so the e2e test (which boots the module directly) doesn't validate.

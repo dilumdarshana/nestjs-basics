@@ -10,7 +10,7 @@ export class AdminService {
     const roleDb = await this.roleFindByName(roleName);
 
     if (roleDb) throw new ConflictException('Role already exists');
-  
+
     // create role in database
     return this.prismaService.role.create({
       data: {

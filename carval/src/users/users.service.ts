@@ -6,7 +6,7 @@ import { User } from './user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly repo: Repository<User>
+    @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
   create(email: string, password: string) {
@@ -15,7 +15,7 @@ export class UsersService {
     // hooks or listeners won't be triggered.
     const user = this.repo.create({ email, password });
 
-    return this.repo.save(user)
+    return this.repo.save(user);
   }
 
   findOne(id: number) {
@@ -23,16 +23,16 @@ export class UsersService {
   }
 
   find(email: string) {
-    return this.repo.find({ where: { email }});
+    return this.repo.find({ where: { email } });
   }
 
   async update(id: number, attr: Partial<User>) {
     const user = await this.findOne(id);
-  
+
     if (!user) {
       throw new NotFoundException('User not found!!!');
     }
-  
+
     const newUser = { ...user, ...attr };
 
     return this.repo.save(newUser);

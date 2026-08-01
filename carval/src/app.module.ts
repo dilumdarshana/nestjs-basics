@@ -36,34 +36,40 @@ import { dataSourceOptions } from '../db/data-source';
     //     }
     //   }
     // }),
-  //   TypeOrmModule.forRoot({
-  //     type: 'sqlite',
-  //     database: 'db.sqlite',
-  //     entities: [User, Report],
-  //     synchronize: true,
-  // }), 
-    UsersModule, ReportsModule],
+    //   TypeOrmModule.forRoot({
+    //     type: 'sqlite',
+    //     database: 'db.sqlite',
+    //     entities: [User, Report],
+    //     synchronize: true,
+    // }),
+    UsersModule,
+    ReportsModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
-    {// setup global pipeline
+    {
+      // setup global pipeline
       provide: APP_PIPE,
       useValue: new ValidationPipe({
         // remove non existing attributes from the request compare with
         // DTO before pass to service
         whitelist: true,
       }),
-    }
+    },
   ],
 })
 export class AppModule {
   constructor(private configService: ConfigService) {}
-  // setup global middleware. This middleware take care of 
+  // setup global middleware. This middleware take care of
   // attache user from the cookie
   configure(consumer: MiddlewareConsumer) {
     consumer
-     .apply(cookieSession({
-      keys: [this.configService.get<string>('COOKIE_KEY')],
-    })).forRoutes('*')
+      .apply(
+        cookieSession({
+          keys: [this.configService.get<string>('COOKIE_KEY')],
+        }),
+      )
+      .forRoutes('*');
   }
 }

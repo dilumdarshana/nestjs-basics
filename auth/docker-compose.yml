@@ -1,17 +1,15 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres
-    container_name: postgres-database
+    image: postgres:17-alpine
+    container_name: nest-concepts-auth-postgres
     environment:
       POSTGRES_DB: commondb
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres-data:/var/www/docker_volumes/postgres
+      - auth-postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U myuser -d commondb"]
@@ -20,5 +18,4 @@ services:
       retries: 5
 
 volumes:
-  postgres-data:
-  
+  auth-postgres-data:

@@ -1,11 +1,15 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { JwtService } from '@nestjs/jwt';
 
-type CustomRequest = Request & { 
-  headers: Request['headers'] & { 
-    authorization?: string 
-  } 
+type CustomRequest = Request & {
+  headers: Request['headers'] & {
+    authorization?: string;
+  };
 };
 
 @Injectable()
@@ -24,7 +28,7 @@ export class LocalAuthGuard implements CanActivate {
 
     if (!authHeader) throw new UnauthorizedException('Token not provided');
 
-    const [bearer, token] = authHeader.split(' ');
+    const [, token] = authHeader.split(' ');
     if (!token) throw new UnauthorizedException('Token not provided');
 
     // verify JWT token

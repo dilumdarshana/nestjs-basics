@@ -11,5 +11,5 @@ export type User = PrismaUser & {
     id: number;
     name: string;
     created_at: Date;
-  }
+  };
 };

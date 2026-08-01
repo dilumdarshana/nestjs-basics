@@ -1,20 +1,42 @@
-# compiled output
-di/dist
-di/node_modules
-di/.DS_Store
+# dependencies
+node_modules/
 
-messages/node_modules
-messages/build
-messages/.DS_Store
+# build output
+dist/
+build/
 
-carval/dist
-carval/node_modules
-carval/.DS_Store
-carval/db.sqlite
-carval/test.sqlite
+# test coverage
+coverage/
+.nyc_output/
 
+# logs
+*.log
+pnpm-debug.log*
+npm-debug.log*
+
+# environment files - never commit real env files
+.env
+.env.*
+!.env.example
+
+# databases
+*.sqlite
+*.sqlite3
+carval/*.sqlite
+
+# TypeScript build info
+*.tsbuildinfo
+
+# OS
 .DS_Store
 
-.env.test
+# IDEs
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
+# TypeORM generated migrations (committed manually via migrations/ dir)
 *-migrations.ts

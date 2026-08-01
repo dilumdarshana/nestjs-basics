@@ -10,7 +10,7 @@ import { UsersService } from '../users.service';
 export class CurrentUserInterceptor implements NestInterceptor {
   constructor(private usersService: UsersService) {}
 
-  async intercept (context: ExecutionContext, handler: CallHandler) {
+  async intercept(context: ExecutionContext, handler: CallHandler) {
     const request = context.switchToHttp().getRequest();
 
     // in this case, cookie session bind into the request before

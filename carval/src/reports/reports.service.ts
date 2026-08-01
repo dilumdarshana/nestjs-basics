@@ -9,7 +9,9 @@ import { GetEstimateDto } from './dtos/get-estimate.dto';
 
 @Injectable()
 export class ReportsService {
-  constructor(@InjectRepository(Report) private readonly repo: Repository<Report>) {}
+  constructor(
+    @InjectRepository(Report) private readonly repo: Repository<Report>,
+  ) {}
 
   createReport(body: CreateReportDto, user: User) {
     const report = this.repo.create(body);
@@ -33,7 +35,8 @@ export class ReportsService {
   async getReport(query: GetEstimateDto) {
     const { make, model, year, mileage } = query;
 
-    return this.repo.createQueryBuilder()
+    return this.repo
+      .createQueryBuilder()
       .select('AVG(price)', 'price')
       .where('make = :make', { make })
       .andWhere('model = :model', { model })

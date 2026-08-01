@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, Inject, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
@@ -15,7 +21,8 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    @Inject(refreshConfig.KEY) private refreshTokenConfig: ConfigType<typeof refreshConfig>,
+    @Inject(refreshConfig.KEY)
+    private refreshTokenConfig: ConfigType<typeof refreshConfig>,
   ) {}
 
   async signin({ username, password }) {
@@ -23,7 +30,7 @@ export class AuthService {
 
     if (!user) throw new NotFoundException(`User ${username} not found`);
 
-    if (!await verify(user.password, password)) {
+    if (!(await verify(user.password, password))) {
       throw new UnauthorizedException(`User ${username} not authorized`);
     }
 
@@ -36,7 +43,7 @@ export class AuthService {
       role: user.role_id,
       accessToken,
       refreshToken,
-    }
+    };
   }
 
   async signup(user: SignupPayloadDto) {
@@ -52,15 +59,15 @@ export class AuthService {
 
     return {
       message: 'User created successfully',
-    }
+    };
   }
 
-  async generateTokens(user): Promise<TokenResponse>{
-    const payload: JwtPayload = { 
+  async generateTokens(user): Promise<TokenResponse> {
+    const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       role_id: user.role_id,
-      role: user.Role.name,
+      role: user.role ?? user.Role?.name,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -85,7 +92,7 @@ export class AuthService {
       email: user.email,
       role_id: user.role_id,
       role: user.Role.name,
-    }
+    };
   }
 
   async validateRefreshToken(userId: number) {
@@ -99,7 +106,7 @@ export class AuthService {
       email: user.email,
       role_id: user.role_id,
       role: user.Role.name,
-    }
+    };
   }
 
   async refreshToken(user: AuthResponse) {
@@ -112,6 +119,6 @@ export class AuthService {
       role: user.role,
       accessToken,
       refreshToken,
-    }
+    };
   }
 }

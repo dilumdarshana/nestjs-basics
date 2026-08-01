@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
@@ -14,10 +14,12 @@ import jwtRefreshConfig from './config/jwt.refresh.config';
     // without using nest config module
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: process.env.JWT_EXPIRATION },
+      signOptions: {
+        expiresIn: process.env.JWT_EXPIRATION as JwtSignOptions['expiresIn'],
+      },
     }),
     // JWT refresh token configuration using nest config module
-    ConfigModule.forFeature(jwtRefreshConfig), 
+    ConfigModule.forFeature(jwtRefreshConfig),
   ],
   providers: [
     AuthService,
@@ -26,6 +28,6 @@ import jwtRefreshConfig from './config/jwt.refresh.config';
     JwtStrategy,
     JWTRefreshStrategy,
   ],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

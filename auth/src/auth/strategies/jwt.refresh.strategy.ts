@@ -7,9 +7,13 @@ import { JwtPayload } from '../types/jwt_payload';
 import jwtRefreshConfig from '../config/jwt.refresh.config';
 
 @Injectable()
-export class JWTRefreshStrategy extends PassportStrategy(Strategy, 'refresh-jwt') {
+export class JWTRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'refresh-jwt',
+) {
   constructor(
-    @Inject(jwtRefreshConfig.KEY) private refreshTokenConfiguration: ConfigType<typeof jwtRefreshConfig>,
+    @Inject(jwtRefreshConfig.KEY)
+    private refreshTokenConfiguration: ConfigType<typeof jwtRefreshConfig>,
     private authService: AuthService,
   ) {
     super({
@@ -25,4 +29,4 @@ export class JWTRefreshStrategy extends PassportStrategy(Strategy, 'refresh-jwt'
 
     return this.authService.validateRefreshToken(userId);
   }
-};
+}

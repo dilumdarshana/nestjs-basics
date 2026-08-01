@@ -7,17 +7,17 @@ import { SharedArray } from 'k6/data';
 
 // load test users from a file
 const users = new SharedArray('users', () => {
-  return JSON.parse(open('./users.json'))
+  return JSON.parse(open('./users.json'));
 });
 
 // one of the K6 matrix
 const failureRate = new Rate('failed_requests');
 
-const BASE_URL = 'http://localhost:3000'; 
+const BASE_URL = 'http://localhost:3000';
 
 export const options = {
-  vus: 10,  // Number of virtual users
-  duration: '5s',  // Test duration
+  vus: 10, // Number of virtual users
+  duration: '5s', // Test duration
   thresholds: {
     http_req_duration: ['p(95)<500'], // 95% of requests should be below 500ms
     'http_req_duration{endpoint:signin}': ['p(95)<1'], // focus on specific API
@@ -67,11 +67,9 @@ export default function () {
     // take a random user
     const user = users[Math.floor(Math.random() * users.length)];
 
-    const response = http.post(`${BASE_URL}/signin`, user,
-      {
-        tags: { endpoint: 'users' },
-      },
-    );
+    const response = http.post(`${BASE_URL}/signin`, user, {
+      tags: { endpoint: 'users' },
+    });
 
     // fill the matrix
     failureRate.add(response.status !== 200); // this count as failure
@@ -80,7 +78,7 @@ export default function () {
       'signin status is 200': (r) => r.status === 200,
       'sigin response time < 400ms': (r) => r.timings.duration < 1,
     });
-    
+
     sleep(1);
   });
 
