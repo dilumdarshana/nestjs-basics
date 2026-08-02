@@ -91,9 +91,9 @@ The log output makes the DI wiring visible:
 
 ```
 supplying power 100
-Drawing 100W of power from powser service
+Drawing 100W of power from power service
 supplying power 20
-Drawing 20W of power from PowserService
+Drawing 20W of power from PowerService
 ```
 
 ## Running it
@@ -112,12 +112,10 @@ curl http://localhost:3000/network
 
 - **Unit** (`pnpm test`): 4 smoke "should be defined" specs (controller + services). Uses `useValue: {}` stubs for collaborators.
 - **e2e** (`pnpm test:e2e`): boots `ComputerModule` (the circular deps resolve!) and asserts `GET /computer` → 200.
-- jest `moduleNameMapper` maps `^src/(.*)$` because sources use absolute `src/...` imports (see `tsconfig.json` `baseUrl`).
+- jest `moduleNameMapper` maps `^src/(.*)$` because sources use absolute `src/...` imports (see `tsconfig.json` `paths`).
 
 ## Gotchas / notes
 
 - `POST /computer` returns an empty 201 body (the handler has no `return`).
 - `NetworkService` copies all computers each call — no dedupe, so repeated POSTs create duplicates.
-- `connectedComputers` is typed `string[]` but actually stores `{ ip, name }` objects.
-- Log strings have typos (`powser service`, `PowserService`) — intentional silliness, ignore.
 - Everything is in-memory; state resets on restart.

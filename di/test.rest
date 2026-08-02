@@ -1,4 +1,12 @@
-###
+# di API — DI (dependency injection) demo: computer <-> network
+# Flow: POST /computer registers a computer in memory AND connects it to the
+# network (via forwardRef circular DI); GET /network lists connected computers.
+
+### 1. Run the computer — computes CPU + disk (note: no @Body needed)
+GET http://localhost:3000/computer
+
+### 2. Add a computer — stores it in memory + connects it to the network.
+###    Returns 201 with an empty body (handler returns nothing).
 POST http://localhost:3000/computer
 Content-Type: application/json
 
@@ -7,5 +15,5 @@ Content-Type: application/json
   "name": "Router"
 }
 
-###
+### 3. Connected computers — lists computers registered via POST (network-side)
 GET http://localhost:3000/network
