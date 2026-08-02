@@ -1,4 +1,10 @@
-###
+# event-emitter API — event-driven account → snapshot flow
+# Flow: POST /accounts creates an account and EMITS 'snapshots.generate' on
+# the global EventEmitter2 bus; SnapshotsService (@OnEvent listener) reacts
+# and records a snapshot. The two modules never call each other directly.
+
+### 1. Create an account — stores it AND emits snapshots.generate.
+###    Returns 201 with an empty body (handler returns nothing).
 POST http://localhost:3000/accounts
 Content-Type: application/json
 
@@ -7,5 +13,6 @@ Content-Type: application/json
   "amount": 1000
 }
 
-####
+### 2. Snapshots — lists snapshots produced by the event listener.
+###    Empty [] until a POST /accounts has fired the event (in-memory state).
 GET http://localhost:3000/snapshots

@@ -54,7 +54,7 @@ sequenceDiagram
 ```
 event_emitter/
 └─ src/
-   ├─ main.ts                    # bare bootstrap, port 3000
+   ├─ main.ts                    # bare bootstrap, PORT env or 3000
    ├─ app.module.ts              # EventEmitterModule.forRoot() + both feature modules
    ├─ accounts/
    │  ├─ accounts.module.ts      # provides+exports AccountsService
@@ -94,7 +94,7 @@ curl http://localhost:3000/snapshots
 
 ## Gotchas / notes
 
-- `SnapshotsModule` imports `AccountsModule` via a **non-relative path** (`'src/accounts/accounts.module'`); it works because of `baseUrl` + the jest `moduleNameMapper` in `test/jest-e2e.json`. Not needed anymore (the service is never used).
+- `SnapshotsModule` imports `AccountsModule` via a **non-relative path** (`'src/accounts/accounts.module'`); it works because of the `paths` mapping in `tsconfig.json` + the jest `moduleNameMapper` in `test/jest-e2e.json`. Not needed anymore (the service is never used).
 - `SnapshotsService` injects `AccountsService` but never calls it (a commented-out alternative loop exists) — dead dependency, fine for reference.
 - No validation on `POST /accounts` (plain interface body); malformed payloads are accepted.
 - State is in-memory only — everything resets on restart.
