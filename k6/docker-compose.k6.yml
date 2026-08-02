@@ -6,8 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile.k6
     container_name: my-grafana-k6
-    network_mode: "host"  # For Linux
-    # network_mode: "bridge"  # For Windows/Mac
+    # Bridge networking + host-gateway lets the container reach the host app
+    # via `host.docker.internal` on Linux, macOS, and Windows alike.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./test/k6:/scripts
       

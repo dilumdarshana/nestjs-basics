@@ -1,4 +1,12 @@
-###
+# k6 target API — a trivial hello/signin app whose only purpose is to be
+# load-tested by Grafana k6 (test/k6/load-test.spec.ts). Run `pnpm start:k6`
+# first, then send these. Both routes are the k6 load-test targets.
+
+### 1. GET / — tagged `endpoint: hello` in the k6 script
+GET http://localhost:3000
+
+### 2. POST /signin — tagged `endpoint: users` in the k6 script.
+###    No ValidationPipe here, so any body is accepted; echoes it back (200).
 POST http://localhost:3000/signin
 Content-Type: application/json
 
