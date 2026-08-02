@@ -5,8 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // this depends on class-validator and class-transformer npm modules
-  // use case:
+  // Global validation pipeline (relies on class-validator + class-transformer):
+  // - whitelist: strips properties not declared in the DTO
+  // - transform: converts the plain JSON body into a PostHelloDto instance
+  // - skipMissingProperties: false -> missing required fields fail validation
+  // This runs for every route, before the route-level MyPipe in the controller.
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -7,6 +7,9 @@ export class AppService {
     return 'Hello World!';
   }
 
+  // Last step of the request lifecycle: the handler hands the (already
+  // validated + transformed) DTO to the service. The runtime check is a
+  // belt-and-braces guard for the DTO's @IsNumber().
   postHello(data: PostHelloDto) {
     console.log('Calling Service...', data);
 

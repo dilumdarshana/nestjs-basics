@@ -1,4 +1,15 @@
-###
+# execution_order API — NestJS request lifecycle demo
+# The demo is the SERVER CONSOLE LOG sequence, not the HTTP response:
+#   middleware -> guard -> interceptor(before) -> pipes -> controller -> service
+#   -> interceptor(after). POST / triggers the full pipeline (guard/interceptor/
+#   pipe are route-level); GET / runs only middleware + the global ValidationPipe.
+
+### 1. Hello — GET / runs middleware + global pipe only
+GET http://localhost:3000
+
+### 2. POST — full pipeline: guard + interceptor + MyPipe + global ValidationPipe.
+###    Watch the console for the ordered logs. Body is validated by the DTO
+###    (name/age/email); the extra "url" field is stripped by whitelist: true.
 POST http://localhost:3000
 Content-Type: application/json
 
@@ -7,4 +18,14 @@ Content-Type: application/json
   "age": 12,
   "email": "john.doe@example.com",
   "url": "http://localhost:3000"
+}
+
+### 3. POST — invalid body: age is a string, so ValidationPipe rejects (400)
+POST http://localhost:3000
+Content-Type: application/json
+
+{
+  "name": "Apache",
+  "age": "twelve",
+  "email": "john.doe@example.com"
 }

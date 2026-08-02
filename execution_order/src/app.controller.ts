@@ -22,6 +22,10 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  // Demonstrates the execution-order pipeline on a single route. Request
+  // lifecycle for POST /: middleware -> guard -> interceptor(before) ->
+  // pipe(s) -> handler -> service -> interceptor(after). Watch the console
+  // logs in that exact order.
   @UseGuards(MyGuard)
   @UseInterceptors(MyInterceptor)
   @UsePipes(MyPipe)
