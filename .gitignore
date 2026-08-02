@@ -41,5 +41,11 @@ carval/*.sqlite
 # TypeORM generated migrations (committed manually via migrations/ dir)
 *-migrations.ts
 
+# carval build artifacts emitted next to source (no rootDir, so db/ + migrations/ compile in place)
+carval/db/*.js
+carval/db/*.d.ts
+carval/db/*.js.map
+carval/migrations/*.d.ts
+
 # Prisma 7 generated client (auth)
 auth/src/generated/

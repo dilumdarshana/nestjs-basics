@@ -42,18 +42,20 @@ export class ReportsService {
   async getReport(query: GetEstimateDto) {
     const { make, model, year, mileage } = query;
 
-    return this.repo
-      .createQueryBuilder()
-      .select('AVG(price)', 'price')
-      .where('make = :make', { make })
-      .andWhere('model = :model', { model })
-      .andWhere('year - :year BETWEEN -3 AND 3', { year })
-      // only approved reports count towards the estimate
-      .andWhere('approved IS TRUE')
-      // closest-matching mileage wins the (3-row) sample
-      .orderBy('ABS(mileage - :mileage)', 'DESC')
-      .setParameter('mileage', mileage)
-      .limit(3)
-      .getRawOne();
+    return (
+      this.repo
+        .createQueryBuilder()
+        .select('AVG(price)', 'price')
+        .where('make = :make', { make })
+        .andWhere('model = :model', { model })
+        .andWhere('year - :year BETWEEN -3 AND 3', { year })
+        // only approved reports count towards the estimate
+        .andWhere('approved IS TRUE')
+        // closest-matching mileage wins the (3-row) sample
+        .orderBy('ABS(mileage - :mileage)', 'DESC')
+        .setParameter('mileage', mileage)
+        .limit(3)
+        .getRawOne()
+    );
   }
 }
