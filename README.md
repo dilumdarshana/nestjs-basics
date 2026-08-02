@@ -76,17 +76,22 @@ pnpm --filter auth start:dev
 
 ### Notes per project
 
-- **carval** reads `.env.<NODE_ENV>` (e.g. `.env.development`). Copy
-  `carval/.env.example` to `.env.development` and fill in the values before running.
+- **carval** reads a single `.env` via `ConfigModule`. Copy `carval/.env.example`
+  to `.env` and fill in the values before running.
 - **auth** uses Prisma + Postgres. Run `pnpm --filter auth exec prisma migrate deploy`
   against a running Postgres (see `auth/docker-compose.yml`), then copy
   `auth/.env.example` to `.env`. The `auth` e2e suite requires Postgres.
-- **k6** runs the load test in a Docker k6 image (no npm `k6` dependency needed):
+- **k6** runs load tests in a Docker k6 image (no npm `k6` dependency needed).
+  Pick a scenario — load / stress / spike / soak:
   ```bash
   pnpm --filter k6 k6:build
-  pnpm --filter k6 k6:test
+  pnpm --filter k6 k6:test:load      # or :stress, :spike, :soak
   ```
-- **prometheus** ships a `docker-compose.yml` with Prometheus + Grafana.
+  See `k6/CONCEPTS.md` for the k6 concepts (VUs, executors, stages, thresholds).
+- **prometheus** ships a `docker-compose.yml` with Prometheus + Grafana
+  (Grafana's datasource is auto-provisioned). Start it with
+  `pnpm --filter prometheus docker:up`. See `prometheus/CONCEPTS.md` for the
+  Prometheus/Grafana concepts.
 
 ## Shared configuration
 
@@ -104,7 +109,7 @@ Adding a new concept project:
 ```bash
 mkdir my-concept && cd my-concept
 pnpm add @nestjs/common @nestjs/core @nestjs/platform-express reflect-metadata rxjs
-pnpm add -D @nestjs/cli typescript ts-loader ts-node tsconfig-paths @types/node @types/express jest ts-jest @types/jest supertest @types/supertest @nestjs/testing @nestjs/schematics
+pnpm add -D @nestjs/cli @nestjs/schematics @nestjs/testing typescript ts-loader ts-node tsconfig-paths @types/node @types/express jest ts-jest @types/jest jest-environment-node jest-mock supertest @types/supertest eslint typescript-eslint @eslint/js @eslint/eslintrc globals eslint-config-prettier eslint-plugin-prettier prettier @swc/cli @swc/core source-map-support
 ```
 
 …then create `nest-cli.json`, `tsconfig.json` (extending `../tsconfig.base.json`),

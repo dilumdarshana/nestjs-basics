@@ -1,5 +1,7 @@
 # prometheus — Metrics with @willsoto/nestjs-prometheus
 
+> **New to Prometheus/Grafana?** Read [CONCEPTS.md](./CONCEPTS.md) first — it explains metrics, scraping, PromQL, labels, and how the Prometheus + Grafana stack fits together, grounded in this project's code. This README covers *how to run* the stack.
+
 A minimal NestJS app wired to **Prometheus + Grafana** via `@willsoto/nestjs-prometheus` and `prom-client`. It registers a Counter metric, increments it on every request, and exposes a `/metrics` endpoint for Prometheus to scrape.
 
 ## What this project demonstrates
