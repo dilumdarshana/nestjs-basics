@@ -2,7 +2,7 @@ name: my-prometheus-grafana
 
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.13.2
     container_name: my-prometheus
     ports:
       - "9090:9090"
@@ -14,7 +14,7 @@ services:
       - monitoring
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.1.1
     container_name: my-grafana
     ports:
       - "3030:3000"
