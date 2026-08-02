@@ -2,6 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./"
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "jest", "express", "supertest"]
   }
 }

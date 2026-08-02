@@ -76,6 +76,6 @@ pnpm start:dev            # or from repo root: pnpm start:messages
 - **CWD-dependent path**: `MessageRepository` uses the relative path `'./messages.json'`, resolved against where the process runs. `pnpm start:dev` from the project folder works; a different CWD breaks it.
 - IDs are `Math.floor(Math.random() * 999)` — collisions silently overwrite existing messages.
 - No error handling for a missing/corrupt `messages.json` (would 500).
-- `findAll()` is typed `Promise<{ conent: string[] }>` (typo) but actually returns the parsed record — the annotation doesn't match reality.
+- `findAll()` is typed `Promise<Record<string, { id: number; content: string }>>` (the original had a `conent` typo and a wrong shape — both fixed).
 - `POST` returns an empty 201 body.
 - The `ValidationPipe` is registered in `main.ts` only, so the e2e test (which boots the module directly) doesn't validate.

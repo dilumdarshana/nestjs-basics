@@ -1,7 +1,12 @@
-####
+# messages API — three-layer CRUD (controller -> service -> repository) with a
+# JSON file store. Run `pnpm start:messages` from the repo root first, then
+# send these. Watch messages.json change after the POST.
+
+### 1. GET /messages — all stored messages (JSON object keyed by id)
 GET http://localhost:3000/messages
 
-###
+### 2. POST /messages — create; body validated by global ValidationPipe.
+###    content must be a non-empty string; otherwise 400. Returns 201, empty body.
 POST http://localhost:3000/messages
 Content-Type: application/json
 
@@ -9,16 +14,16 @@ Content-Type: application/json
   "content": "New comment2"
 }
 
-###
-GET http://localhost:3000/messages/971
+### 3. GET /messages/12 — existing id (whatever the store has) -> one message
+GET http://localhost:3000/messages/12
 
-###
-POST https://api.fino.lk/web/public/client/phone/sms-code
+### 4. GET /messages/9999 — missing id -> 404 Message 9999 not found
+GET http://localhost:3000/messages/9999
+
+### 5. POST invalid body — content missing -> 400 from ValidationPipe
+POST http://localhost:3000/messages
 Content-Type: application/json
 
 {
-    "mobilePhone": {
-        "number": "0771999348"
-    }
+  "body": "missing content"
 }
-
