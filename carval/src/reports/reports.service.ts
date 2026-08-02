@@ -14,6 +14,8 @@ export class ReportsService {
   ) {}
 
   createReport(body: CreateReportDto, user: User) {
+    // attaches the current user (from req.currentUser via @CurrentUser) so
+    // the report rows are owned by the signed-in user.
     const report = this.repo.create(body);
     report.user = user;
 
@@ -27,11 +29,16 @@ export class ReportsService {
       throw new NotFoundException('Report not found');
     }
 
+    // only the approved flag can be changed here (ApproveReportDto)
     report.approved = body.approved;
 
     return this.repo.save(report);
   }
 
+  // Estimate: AVG price of APPROVED reports of the same make/model, year
+  // within +/-3 of the query year, ranked by how close the mileage is.
+  // Returns a single raw row { price } — or null if no approved report
+  // matches (remember reports are created as approved=false).
   async getReport(query: GetEstimateDto) {
     const { make, model, year, mileage } = query;
 
@@ -41,7 +48,9 @@ export class ReportsService {
       .where('make = :make', { make })
       .andWhere('model = :model', { model })
       .andWhere('year - :year BETWEEN -3 AND 3', { year })
+      // only approved reports count towards the estimate
       .andWhere('approved IS TRUE')
+      // closest-matching mileage wins the (3-row) sample
       .orderBy('ABS(mileage - :mileage)', 'DESC')
       .setParameter('mileage', mileage)
       .limit(3)

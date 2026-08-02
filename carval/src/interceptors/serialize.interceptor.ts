@@ -17,6 +17,14 @@ export function Serialize(dto: ClassConstructor) {
   return UseInterceptors(new SerializeInterceptor(dto));
 }
 
+// Response-shaping interceptor: strips any property not exposed by the DTO
+// (uses plainToInstance + excludeExtraneousValues: true). E.g. @Serialize(UserDto)
+// removes the hashed password from API responses.
+//
+// LIFECYCLE: interceptors run AFTER guards but BEFORE pipes. That ordering is
+// why the req.body mutation below lands before ValidationPipe sees the body —
+// the pipe (whitelist: true) then strips those injected keys. This is the
+// documented reason the comment below warns against doing it here.
 export class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: any) {}
   /**
@@ -34,6 +42,8 @@ export class SerializeInterceptor implements NestInterceptor {
     // to the contoller
     const req = context.switchToHttp().getRequest();
     // Example modification: Add a new property or override existing
+    // (demonstration only — mutating req.body here is a side effect; the
+    // README notes it works only because ValidationPipe strips extras).
     if (req.body) {
       req.body.modifiedByInterceptor = true;
       req.body.timestamp = Date.now();
@@ -46,6 +56,8 @@ export class SerializeInterceptor implements NestInterceptor {
       map((data: any) => {
         // run something before the response is sent out
         // console.log('I am running before response is sent out', data);
+        // plainToInstance(dto, data) copies data onto a DTO instance; with
+        // excludeExtraneousValues only @Expose()-decorated fields survive.
         return plainToInstance(this.dto, data, {
           excludeExtraneousValues: true,
         });

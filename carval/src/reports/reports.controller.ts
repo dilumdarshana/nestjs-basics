@@ -23,6 +23,8 @@ import { GetEstimateDto } from './dtos/get-estimate.dto';
 export class ReportsController {
   constructor(private reportService: ReportsService) {}
 
+  // create + approve need the current user, so they rely on the global
+  // CurrentUserMiddleware having populated req.currentUser first.
   @Post('/')
   @UseGuards(AuthGuard)
   @Serialize(ReportDto)
@@ -30,12 +32,15 @@ export class ReportsController {
     return this.reportService.createReport(body, user);
   }
 
+  // NOTE: AdminGuard alone -> unauthenticated requests 500 (currentUser
+  // undefined). See guards/admin.guard.ts.
   @Patch('/:id')
   @UseGuards(AdminGuard)
   approveReport(@Param('id') id: string, @Body() body: ApproveReportDto) {
     return this.reportService.approveReport(id, body);
   }
 
+  // deliberately unguarded — anyone can query estimates
   @Get()
   getReport(@Query() query: GetEstimateDto) {
     return this.reportService.getReport(query);

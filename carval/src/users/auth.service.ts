@@ -21,7 +21,9 @@ export class AuthService {
       throw new BadRequestException('User already exists');
     }
 
-    // generate password hash
+    // Hash format stored in DB: "<salt-hex>.<hash-hex>" (scrypt, 32-byte key).
+    // The salt is unique per user and stored alongside the hash so signin
+    // can recompute the same hash.
     const salt = randomBytes(8).toString('hex');
 
     const hash = (await scrypt(password, salt, 32)) as Buffer;
@@ -40,7 +42,8 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException(`User ${email} not found`);
     }
-    // get the password salt
+    // re-derive the hash with the stored salt and compare hex strings.
+    // NOTE: a plain string compare is not timing-safe (README Gotchas).
     const [salt, passwordDb] = user.password.split('.');
 
     // hash the given password and compare with db password
@@ -50,7 +53,7 @@ export class AuthService {
       throw new UnauthorizedException('Username or password is incorrect');
     }
 
-    // return cookie or token
+    // authenticated: the controller sets session.userId from this user
     return user;
   }
 }

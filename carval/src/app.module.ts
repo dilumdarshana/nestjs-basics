@@ -60,8 +60,15 @@ import { dataSourceOptions } from '../db/data-source';
 })
 export class AppModule {
   constructor(private configService: ConfigService) {}
-  // setup global middleware. This middleware take care of
-  // attache user from the cookie
+  // Global middleware wiring lives here (not main.ts) so the e2e tests
+  // create the app through AppModule and get the same pipeline.
+  //
+  // ORDER MATTERS: cookieSession must run BEFORE CurrentUserMiddleware
+  // (registered in UsersModule) so req.session is parsed first — the
+  // middleware reads session.userId to populate req.currentUser.
+  //
+  // cookie-session signs/parses a cookie via COOKIE_KEY; it stores the
+  // payload (here just { userId }) on req.session.
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(

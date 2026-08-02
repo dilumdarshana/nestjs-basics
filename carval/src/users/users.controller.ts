@@ -42,6 +42,8 @@ export class UsersController {
   @Post('/signup')
   async createUser(@Body() body: CrateUserDto, @Session() session: any) {
     const user = await this.authService.signup(body.email, body.password);
+    // cookie-session: assign userId -> the signed cookie now carries it, so
+    // subsequent requests are authenticated (CurrentUserMiddleware resolves it).
     session.userId = user.id;
 
     return user;
@@ -50,6 +52,7 @@ export class UsersController {
   @Post('/signin')
   async signin(@Body() body: CrateUserDto, @Session() session: any) {
     const user = await this.authService.signin(body.email, body.password);
+    // same as signup: persist the authenticated userId in the session cookie
     session.userId = user.id;
 
     return user;
@@ -57,10 +60,14 @@ export class UsersController {
 
   @Post('/signout')
   signout(@Session() session: any) {
+    // NOTE: only nulls userId — the cookie itself stays, so the client still
+    // holds a (now useless) signed cookie. A real impl should clear it.
     session.userId = null;
   }
 
   // @UseInterceptors(new SerializeInterceptor(UserDto)) // can exclude some properties
+  // Note: create/find/update/delete below are deliberately UNGUARDED in this
+  // tutorial (README Gotchas) — anyone can read/modify users by id.
   @Get('/:id')
   async findUser(@Param('id') id: number) {
     const user = await this.userService.findOne(id);

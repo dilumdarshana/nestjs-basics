@@ -5,6 +5,10 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // Thin bootstrap: the global pipeline (cookie-session + CurrentUserMiddleware)
+  // and ValidationPipe are configured in AppModule, NOT here. Why? So e2e tests
+  // that create the app from AppModule get the same pipeline as production.
+  // (See app.module.ts configure() + APP_PIPE provider.)
   // Note: moved this pipeline and middleware to the AppModule becz of e2e tests doen't work
   // app.use(cookieSession({
   //   keys: ['abcdef'],
