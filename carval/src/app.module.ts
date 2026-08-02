@@ -17,7 +17,6 @@ import { dataSourceOptions } from '../db/data-source';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     // this will look for the configurations from eigher ormconfig or environment variables
     TypeOrmModule.forRoot(dataSourceOptions),

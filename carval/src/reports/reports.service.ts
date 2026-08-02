@@ -41,7 +41,7 @@ export class ReportsService {
       .where('make = :make', { make })
       .andWhere('model = :model', { model })
       .andWhere('year - :year BETWEEN -3 AND 3', { year })
-      .andWhere('approve IS TRUE')
+      .andWhere('approved IS TRUE')
       .orderBy('ABS(mileage - :mileage)', 'DESC')
       .setParameter('mileage', mileage)
       .limit(3)

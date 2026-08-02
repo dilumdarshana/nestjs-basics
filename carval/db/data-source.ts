@@ -14,7 +14,7 @@ switch (process.env.NODE_ENV) {
       type: 'sqlite',
       database: 'db.sqlite',
       entities: ['*/**/*.entity.js'],
-      migrations: ['migrations/*.js']
+      migrations: ['migrations/*.js'],
     });
     break;
   case 'test':
@@ -37,7 +37,7 @@ switch (process.env.NODE_ENV) {
     break;
   default:
     throw new Error('Invalid NODE_ENV');
-};
+}
 
 const dataSource = new DataSource(dataSourceOptions);
 

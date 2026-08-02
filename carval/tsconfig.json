@@ -2,7 +2,13 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./",
-    "allowJs": true
+    "allowJs": true,
+    "types": [
+      "node",
+      "jest",
+      "express",
+      "cookie-session",
+      "supertest"
+    ]
   }
 }

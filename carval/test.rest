@@ -1,3 +1,8 @@
+# carval API — cookie-session auth + reports
+# Flow: signup/signin set a session cookie (cookie-session); whoami reads it.
+# Note: signout only nulls session.userId — it does NOT clear the cookie.
+
+### 1. Sign up — creates user + sets session cookie (admin defaults to true)
 POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
@@ -6,7 +11,7 @@ Content-Type: application/json
   "password": "1qaz!QAZ"
 }
 
-###
+### 2. Sign in — validates credentials + sets session cookie
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
@@ -15,16 +20,16 @@ Content-Type: application/json
   "password": "1qaz!QAZ"
 }
 
-###
+### 3. Get user by id — 404 if not found
 GET http://localhost:3000/auth/3
 
-###
+### 4. Find users by email — note: intentionally unguarded
 GET http://localhost:3000/auth?email=d.darshana@newpath.com
 
-###
+### 5. Delete user by id — intentionally unguarded
 DELETE http://localhost:3000/auth/2
 
-### Update user
+### 6. Update user by id (email only) — intentionally unguarded
 PATCH http://localhost:3000/auth/2
 Content-Type: application/json
 
@@ -32,14 +37,14 @@ Content-Type: application/json
   "email": "d.darshana@newpath.com"
 }
 
-###
+### 7. Who am I — requires session cookie (AuthGuard) -> 401 if signed out
 GET http://localhost:3000/auth/whoami
 
-###
+### 8. Sign out — nulls session.userId (cookie itself stays)
 POST http://localhost:3000/auth/signout
 Content-Type: application/json
 
-###
+### 9. Create report — requires session cookie (AuthGuard)
 POST http://localhost:3000/reports
 Content-Type: application/json
 
@@ -51,7 +56,7 @@ Content-Type: application/json
   "price": 14000
 }
 
-###
+### 10. Approve report — requires admin (AdminGuard) -> 403 for non-admins
 PATCH http://localhost:3000/reports/1
 Content-Type: application/json
 
@@ -59,5 +64,5 @@ Content-Type: application/json
   "approved": true
 }
 
-###
+### 11. Get report estimate — AVG of approved reports within +/-3 years, top 3 closest mileage
 GET http://localhost:3000/reports?make=Toyota&model=Vitz&year=2014&mileage=100

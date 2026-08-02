@@ -16,14 +16,14 @@ A NestJS + TypeORM + SQLite/Postgres example demonstrating **cookie-session auth
 | **Interceptor + decorator** `@Serialize(UserDto)` (response shaping) | `src/interceptors/serialize.interceptor.ts` |
 | **Password hashing** with `crypto.scrypt` (salt.hash) | `src/users/auth.service.ts` |
 | **TypeORM** entities, repositories, migrations (SQLite dev / Postgres prod) | `src/users/user.entity.ts`, `src/reports/report.entity.ts`, `db/data-source.ts` |
-| **Env-per-environment** config (`.env.${NODE_ENV}`) | `src/app.module.ts` |
+| **Config** via a single `.env` (cookie key, prod `DATABASE_URL`) | `src/app.module.ts` |
 
 ## Architecture
 
 ```
                       ┌────────────────────────────────────────────┐
                       │                  AppModule                  │
-                      │  ConfigModule (global, .env.${NODE_ENV})   │
+                      │  ConfigModule (global, .env)        │
                       │  TypeOrmModule.forRoot(dataSourceOptions)  │
                       │  ├── UsersModule   (auth + user CRUD)      │
                       │  ├── ReportsModule (reports + estimates)   │
@@ -75,7 +75,7 @@ sequenceDiagram
 
 ```
 carval/
-├─ .env.example              # template -> copy to .env.development / .env.test
+├─ .env.example              # template -> copy to .env
 ├─ db/data-source.ts         # TypeORM options (sqlite dev/test, postgres prod)
 ├─ migrations/               # SQL migration (initial schema)
 └─ src/
@@ -133,23 +133,29 @@ TypeORM entity hooks (`@AfterInsert/@AfterUpdate/@AfterRemove`) log lifecycle ev
 
 ## Config / environment
 
-`ConfigModule` loads `.env.${NODE_ENV}` — so development uses `.env.development`, tests use `.env.test`. Copy `.env.example` to both.
+`ConfigModule` loads a single `.env` file. `NODE_ENV` comes from the npm scripts (`start:dev`, `test`, `test:e2e`), not the env file. Copy `.env.example` to `.env`.
 
 | Variable | Used for |
 | --- | --- |
 | `COOKIE_KEY` | signs the session cookie (`cookie-session` keys) |
 | `DATABASE_URL` | only when `NODE_ENV=production` (Postgres) |
 | `PORT` | HTTP port (default `3000`) |
-| `NODE_ENV` | selects env file + data-source |
+| `NODE_ENV` | set by npm scripts; selects the data-source (see below) |
+
+Migrations: `pnpm migration:generate <name>`, `pnpm migration:run`, `pnpm migration:revert` (see `db/data-source.ts` + `migrations/`).
 
 `db/data-source.ts`: dev/test use SQLite (`db.sqlite` / `test.sqlite`); production uses Postgres. Dev mode loads **compiled** `.js` entities, so run `pnpm build` before `start:prod`.
 
 ## Running it
 
 ```bash
-cp .env.example .env.development   # fill in COOKIE_KEY
-pnpm start:dev                     # or from repo root: pnpm start:carval
+cp .env.example .env   # fill in COOKIE_KEY
+pnpm build             # compiles TS (dev entities are loaded as compiled .js)
+pnpm migration:run     # create tables in db.sqlite (dev uses synchronize: false)
+pnpm start:dev         # or from repo root: pnpm start:carval
 ```
+
+> **Why the migration step?** Dev mode runs with `synchronize: false`, so tables are only created by running the migrations in `migrations/` (`IntialSchema...`). Tests don't need it — the test config uses `synchronize: true` against a throwaway `test.sqlite`. Without `pnpm migration:run` first, requests fail with `SQLITE_ERROR: no such table: user`.
 
 Quick check (cookie-based session):
 
@@ -166,7 +172,7 @@ curl -b jar.txt http://localhost:3000/auth/whoami
 
 ## Gotchas / notes
 
-- `GET /reports` estimate query references a non-existent column (`approve IS TRUE` — entity column is `approved`) and will throw. Fix if you need it.
+- `GET /reports` estimate query filters on `approved IS TRUE` — you need an approved report (step 10) before an estimate returns a value, otherwise it returns `null`.
 - `PATCH /reports/:id` uses only `AdminGuard`; on an unauthenticated request `req.currentUser` is `undefined` → 500 instead of 401/403.
 - Every new user has `admin = true` by default — intentional in the tutorial, but change the column default for real use.
 - `POST /auth/signout` doesn't clear the cookie (only the session user id).
