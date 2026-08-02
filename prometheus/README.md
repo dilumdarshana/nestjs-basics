@@ -45,7 +45,10 @@ graph LR
 ```
 prometheus/
 ├─ docker-compose.yml    # prometheus:9090, grafana host:3030, monitoring network
-├─ prometheus.yml        # scrape_interval 15s, target 172.17.0.1:3000
+├─ prometheus.yml        # scrape_interval 15s, target host.docker.internal:3000
+├─ grafana/
+│  └─ provisioning/
+│     └─ datasources/datasource.yml   # auto-connects Grafana to Prometheus
 └─ src/
    ├─ main.ts
    ├─ app.module.ts      # PrometheusModule.register({path:'/metrics'}) + makeCounterProvider
@@ -84,8 +87,9 @@ docker compose up -d
 
 ## Gotchas / notes
 
-- **Scrape target is host-dependent**: `prometheus.yml` hardcodes `172.17.0.1:3000` (Linux Docker bridge gateway). On macOS, edit it to `host.docker.internal:3000`.
+- **Scrape target is host-dependent**: `prometheus.yml` defaults to `host.docker.internal:3000` (macOS/Windows). On Linux, uncomment the `172.17.0.1:3000` target instead.
 - The compose puts Prometheus/Grafana on a custom `monitoring` network — if scraping the host fails, check the target address above.
 - Grafana is exposed on host port **3030** (container's default 3000 is taken by the app).
+- Grafana's Prometheus datasource is **auto-provisioned** from `grafana/provisioning/datasources/datasource.yml` (mounted into the container) — no manual setup needed.
 - Anonymous access is enabled with admin role, so the `admin/admin` login from the old README isn't required.
 - Metrics live only in process memory; retention is up to Prometheus.
