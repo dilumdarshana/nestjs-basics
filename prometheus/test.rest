@@ -1,5 +1,9 @@
-###
+# prometheus API — a minimal NestJS app exposing Prometheus metrics.
+# Run `pnpm start:prometheus` first, then send these. GET / increments the
+# get_hello_calls counter; GET /metrics exposes it in Prometheus text format.
+
+### 1. GET / — increments get_hello_calls counter
 GET http://localhost:3000
 
-###
+### 2. GET /metrics — Prometheus exposition; watch get_hello_calls grow
 GET http://localhost:3000/metrics

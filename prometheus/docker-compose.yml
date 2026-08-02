@@ -1,9 +1,9 @@
-name: my-prometheus-grafana
+name: nest-concepts-prometheus
 
 services:
   prometheus:
     image: prom/prometheus:v3.13.2
-    container_name: my-prometheus
+    container_name: nest-concepts-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -15,7 +15,7 @@ services:
 
   grafana:
     image: grafana/grafana:13.1.1
-    container_name: my-grafana
+    container_name: nest-concepts-grafana
     ports:
       - "3030:3000"
     environment:
@@ -28,3 +28,6 @@ services:
 
 volumes:
   grafana-storage:
+
+networks:
+  monitoring:

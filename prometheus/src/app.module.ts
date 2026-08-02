@@ -6,6 +6,10 @@ import {
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+// Root module. PrometheusModule.register({ path: '/metrics' }) exposes a
+// Prometheus text-format endpoint at GET /metrics that the Prometheus server
+// scrapes. makeCounterProvider defines a Counter metric and registers it as a
+// DI provider, so AppService can inject it via @InjectMetric.
 @Module({
   imports: [PrometheusModule.register({ path: '/metrics' })],
   controllers: [AppController],
