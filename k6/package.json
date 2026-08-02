@@ -23,7 +23,9 @@
     "k6:test:load": "docker compose -f docker-compose.k6.yml run k6 run /scripts/load-test.ts",
     "k6:test:stress": "docker compose -f docker-compose.k6.yml run k6 run /scripts/stress-test.ts",
     "k6:test:spike": "docker compose -f docker-compose.k6.yml run k6 run /scripts/spike-test.ts",
-    "k6:test:soak": "docker compose -f docker-compose.k6.yml run k6 run /scripts/soak-test.ts"
+    "k6:test:soak": "docker compose -f docker-compose.k6.yml run k6 run /scripts/soak-test.ts",
+    "docker:up": "docker compose -f docker-compose.k6.yml up -d",
+    "docker:down": "docker compose -f docker-compose.k6.yml down"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.28",

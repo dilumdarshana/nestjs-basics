@@ -1,11 +1,11 @@
-name: my-grafana-k6
+name: nest-concepts-k6
 
 services:
   k6:
     build:
       context: .
       dockerfile: Dockerfile.k6
-    container_name: my-grafana-k6
+    container_name: nest-concepts-k6
     # Bridge networking + host-gateway lets the container reach the host app
     # via `host.docker.internal` on Linux, macOS, and Windows alike.
     extra_hosts:
