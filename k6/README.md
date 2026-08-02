@@ -1,5 +1,7 @@
 # k6 — Load / Stress / Spike / Soak Testing with Grafana k6
 
+> **New to k6?** Read [CONCEPTS.md](./CONCEPTS.md) first — it explains the k6 concepts (VUs, executors, stages, thresholds, tags, etc.) grounded in this project's code. This README covers *how to run* the tests.
+
 A NestJS app that exists to be **load-tested by Grafana k6** (Docker image). k6 is **not** an npm dependency — tests run in a `grafana/k6` Docker container; only `@types/k6` is installed for editor/type support.
 
 ## What this project demonstrates
